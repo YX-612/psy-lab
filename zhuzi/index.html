@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>诸子百家人格心理测试</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Serif SC','SimSun','STSong','serif';background:#f5f0e8;color:#3c2415;line-height:1.8;min-height:100vh}
+.ink-splash{position:fixed;pointer-events:none;opacity:.03;z-index:-1;border-radius:50%}
+.ink-splash.tl{top:-60px;left:-60px;width:300px;height:300px;background:radial-gradient(circle,#3c2415 0%,transparent 70%)}
+.ink-splash.br{bottom:-80px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,#c0392b 0%,transparent 70%)}
+.page{display:none;max-width:640px;margin:0 auto;padding:20px 16px 40px;animation:fadeIn .5s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+#page-home{text-align:center;padding-top:80px;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.home-dec{font-size:3em;color:#c0392b;opacity:.3;letter-spacing:20px;margin-bottom:8px}
+.home-title{font-size:2.2em;font-weight:900;letter-spacing:8px;margin-bottom:8px}
+.home-sub{font-size:1em;color:#7a6b5d;letter-spacing:4px;margin-bottom:30px}
+.home-desc{max-width:460px;color:#7a6b5d;font-size:.92em;line-height:2;margin-bottom:10px}
+.home-count{color:#b5a697;font-size:.85em;margin-bottom:30px}
+.btn-start{display:inline-block;padding:14px 48px;background:#c0392b;color:#fff;border:none;border-radius:6px;font-family:inherit;font-size:1.1em;letter-spacing:4px;cursor:pointer;box-shadow:0 4px 16px rgba(192,57,43,.2);transition:all .3s}
+.btn-start:hover{background:#a93226;transform:translateY(-2px);box-shadow:0 6px 24px rgba(192,57,43,.3)}
+.home-footer{margin-top:50px;color:#b5a697;font-size:.85em;font-style:italic}
+#page-quiz{padding-top:30px}
+.progress-wrapper{margin-bottom:30px}
+.progress-label{display:flex;justify-content:space-between;font-size:.85em;color:#7a6b5d;margin-bottom:6px}
+.progress-bar{width:100%;height:4px;background:#e0d5c3;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:#c0392b;border-radius:2px;transition:width .4s ease}
+.guidance{text-align:center;color:#b5a697;font-size:.8em;margin-bottom:24px;font-style:italic}
+.q-card{background:#faf6ee;border:1px solid #e0d5c3;border-radius:12px;padding:24px 20px;margin-bottom:16px;animation:slideIn .4s ease}
+.q-num{font-size:.85em;color:#c0392b;margin-bottom:8px;font-weight:600}
+.q-text{font-size:1.1em;font-weight:600;line-height:1.7;margin-bottom:20px}
+.options{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#f5f0e8;border:1px solid #e0d5c3;border-radius:8px;cursor:pointer;transition:all .25s;font-size:.92em;user-select:none}
+.opt:hover{border-color:#c0392b;background:#fef7f0;transform:translateX(4px)}
+.opt-icon{font-size:1.3em;flex-shrink:0;width:32px;text-align:center}
+.opt-text{flex:1;line-height:1.5}
+.opt.sel{border-color:#c0392b;background:#fce8e0}
+#page-result{padding-top:30px}
+.r-header{text-align:center;margin-bottom:28px}
+.r-badge{display:inline-block;font-size:.85em;color:#c0392b;letter-spacing:3px;margin-bottom:10px;padding:4px 16px;border:1px solid #c0392b;border-radius:20px}
+.r-title{font-size:1.6em;font-weight:700;margin-bottom:4px}
+.r-title .hl{color:#c0392b}
+.r-tagline{font-size:1em;color:#7a6b5d;font-style:italic;margin-bottom:10px}
+.divider{text-align:center;color:#e0d5c3;font-size:1.2em;margin:20px 0;letter-spacing:8px}
+.section{background:#faf6ee;border:1px solid #e0d5c3;border-radius:12px;padding:20px;margin-bottom:16px}
+.section-title{font-size:1em;font-weight:700;color:#c0392b;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #e0d5c3}
+.section-body{font-size:.92em;line-height:1.9}
+.trait-list{list-style:none;padding:0}
+.trait-list li{padding:6px 0 6px 20px;position:relative;font-size:.92em}
+.trait-list li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%}
+.trait-list.strength li::before{background:#2d6a4f}
+.trait-list.weakness li::before{background:#c0392b}
+.quote-block{font-style:italic;text-align:center;padding:16px;color:#7a6b5d;font-size:.92em;line-height:1.8}
+.advice-block{padding:12px 16px;border-left:3px solid #b8860b;background:rgba(184,134,11,.06);border-radius:4px;font-size:.92em}
+.canvas-wrap{text-align:center}
+#radarChart{max-width:360px;margin:0 auto 16px;display:inline-block}
+.actions{display:flex;gap:12px;margin-top:24px;justify-content:center;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:6px;padding:10px 28px;background:#c0392b;border:none;border-radius:6px;color:#fff;font-family:inherit;font-size:.95em;cursor:pointer;transition:all .3s}
+.btn-primary:hover{background:#a93226}
+.btn-sec{display:inline-flex;align-items:center;gap:6px;padding:10px 24px;background:#faf6ee;border:1px solid #e0d5c3;border-radius:6px;color:#3c2415;font-family:inherit;font-size:.9em;cursor:pointer;transition:all .3s}
+.btn-sec:hover{border-color:#c0392b;background:#fef7f0}
+.toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%);background:rgba(60,36,21,.9);color:#f5f0e8;padding:10px 24px;border-radius:6px;font-size:.85em;z-index:999;animation:toastUp .4s ease,toastDown .4s ease 1.6s forwards}
+@keyframes toastUp{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes toastDown{from{opacity:1}to{opacity:0;transform:translateX(-50%) translateY(20px)}}
+@media(max-width:480px){.page{padding:16px 12px 30px}#page-home{padding-top:50px}.home-title{font-size:1.6em;letter-spacing:6px}.q-text{font-size:1em}.opt{padding:10px 12px;font-size:.88em}.r-title{font-size:1.3em}.actions{flex-direction:column;align-items:center}.btn-primary,.btn-sec{width:100%;justify-content:center}}
+</style>
+</head>
+<body>
+
+<div class="ink-splash tl"></div>
+<div class="ink-splash br"></div>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="home-dec">&#10022; &#10022; &#10022;</div>
+  <h1 class="home-title">&#35832;&#23376;&#30334;&#23478;</h1>
+  <p class="home-sub">&#20154;  &#26684;  &#24515;  &#29702;  &#27979;  &#35797;</p>
+  <p class="home-desc">&#26149;&#31179;&#25112;&#22269;&#65292;&#30334;&#23478;&#20105;&#40483;&#12290;<br>&#20004;&#21315;&#24180;&#21069;&#30340;&#20808;&#21331;&#26234;&#24935;&#65292;&#20854;&#23454;&#19968;&#30452;&#34255;&#22312;&#20320;&#30340;&#39592;&#23376;&#37324;&#12290;<br>&#21313;&#20116;&#36947;&#39064;&#65292;&#25214;&#22238;&#20320;&#21629;&#20013;&#27880;&#23450;&#30340;&#37027;&#20010;&#27969;&#27966;&#12290;</p>
+  <p class="home-count">&#21253;&#21547; 10 &#20010;&#27969;&#27966; &#183; 15 &#36947;&#36873;&#25321;&#39064;</p>
+  <button class="btn-start" id="btnStart">&#24320;  &#22987;  &#27979;  &#35797;</button>
+  <p class="home-footer">&#8212;&#8212; &#36981;&#20174;&#31532;&#19968;&#30452;&#35273;&#65292;&#26080;&#38656;&#21453;&#22797;&#32416;&#32467; &#8212;&#8212;</p>
+</div>
+
+<!-- QUIZ -->
+<div class="page" id="page-quiz">
+  <div class="progress-wrapper">
+    <div class="progress-label"><span id="progText">&#31532; 1 / 15 &#39064;</span><span id="progPct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+  </div>
+  <p class="guidance">&#10022; &#36981;&#20174;&#31532;&#19968;&#30452;&#35273;&#65292;&#26080;&#38656;&#21453;&#22797;&#32416;&#32467; &#10022;</p>
+  <div id="qContainer"><p style="text-align:center;padding:40px;color:#b5a697">&#10023; &#21152;&#36733;&#39064;&#30446;&#20013;&#8230;</p></div>
+</div>
+
+<!-- RESULT -->
+<div class="page" id="page-result">
+  <div class="r-header">
+    <div class="r-badge">&#10022; &#20320;&#30340;&#28789;&#39746;&#22900;&#21512;</div>
+    <h1 class="r-title"><span class="hl" id="rMaster"></span> &middot; <span id="rLabel"></span></h1>
+    <p class="r-tagline" id="rTagline"></p>
+  </div>
+  <div class="divider">&#8212; &middot; &#8212;</div>
+  <div class="section"><div class="section-title">&#10023; &#20320;&#30340;&#20154;&#26684;&#24213;&#33394;</div><div class="section-body" id="rPersonality"></div></div>
+  <div class="section"><div class="section-title">&#128204; &#20320;&#30340;&#22825;&#36171;&#20248;&#21183;</div><ul class="trait-list strength" id="rStrengths"></ul></div>
+  <div class="section"><div class="section-title">&#9888;&#65039; &#20320;&#38656;&#35201;&#30041;&#24847;&#30340;&#24615;&#26684;&#30701;&#26495;</div><ul class="trait-list weakness" id="rWeaknesses"></ul></div>
+  <div class="section"><div class="section-title">&#128220; &#19987;&#23646;&#20808;&#21331;&#21476;&#31821;&#21407;&#25991;&#23507;&#35821;</div><div class="quote-block" id="rQuote"></div></div>
+  <div class="section"><div class="section-title">&#128161; &#19987;&#23646;&#20154;&#29983;&#24314;&#35758;</div><div class="advice-block" id="rAdvice"></div></div>
+  <div class="section"><div class="section-title">&#128202; &#20320;&#30340;&#20061;&#27969;&#20998;&#24067;</div><div class="canvas-wrap"><canvas id="radarChart"></canvas><p id="radarFallbackMsg" style="display:none;color:#b5a697;font-size:.85em">&#128202; &#22270;&#34920;&#24211;&#26410;&#21152;&#36733;&#65292;&#20197;&#19978;&#20026;&#25991;&#23383;&#29256;&#20998;&#20540;</p></div></div>
+  <div class="actions">
+    <button class="btn-primary" id="btnCopy">&#128203; &#22797;&#21046;&#20998;&#20139;&#25991;&#26696;</button>
+    <button class="btn-sec" id="btnReset">&#128260; &#19968;&#38190;&#37325;&#27979;</button>
+  </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="../vendor/chart.umd.min.js" crossorigin="anonymous" onerror="console.warn('Chart.js CDN failed')"></script>
+
+<script>
+// ============================================================
+// 数据 + 逻辑 + UI（全量内联）
+// ============================================================
+
+// ---- 安全存储降级 ----
+var SafeStore = {
+  _mem: {},
+  get: function(k, d) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e) { return this._mem[k] !== undefined ? this._mem[k] : d; } },
+  set: function(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) { this._mem[k] = v; } },
+  remove: function(k) { try { localStorage.removeItem(k); } catch(e) {} delete this._mem[k]; }
+};
+
+// ---- DATA ----
+// ============================================================
+// 诸子百家人格测试 — 数据（10个流派 + 15道题）
+// ============================================================
+
+const SCHOOLS = [
+  {
+    id: 'rujia', name: '儒家', master: '孔子', label: '孔子',
+    tags: ['仁礼修身', '温和入世', '顾全他人', '重视秩序自省'],
+    tagline: '己所不欲，勿施于人',
+    bgColor: '#c0392b',
+    strengths: [
+      '共情力强，擅长维系人际关系',
+      '坚守道德底线，原则清晰',
+      '责任感强，团队中的稳定力量'
+    ],
+    weaknesses: [
+      '极易内耗，习惯性委屈自己',
+      '不懂拒绝，容易被人情绑架'
+    ],
+    quote: '己所不欲，勿施于人。——《论语·卫灵公》',
+    advice: '温柔需带锋芒，不必事事迁就他人。',
+    personality: '你是一个骨子里带着温度的人。像春日里的清风，你总是习惯先照顾别人的感受。在你的世界里，秩序与善意并重，你相信只要每个人都做好分内之事，世界就会变好。你不喜欢冲突，宁愿自己退一步也要维持关系的和谐。你在乎别人怎么看你，有时候这种在乎变成了自我消耗。你内心很柔软，柔软到连拒绝别人都觉得有罪。但别忘了，爱别人之前，先学会爱自己。'
+  },
+  {
+    id: 'daojia', name: '道家', master: '庄周', label: '庄子',
+    tags: ['逍遥自在', '看淡名利', '顺其自然', '厌恶世俗束缚'],
+    tagline: '至人无己，神人无功，圣人无名',
+    bgColor: '#2d6a4f',
+    strengths: [
+      '心态松弛，接纳得失',
+      '享受独处，情绪自愈力强',
+      '不被外界评价所困'
+    ],
+    weaknesses: [
+      '遇事容易逃避，缺乏主动对抗的动力',
+      '过于随性，缺少现实执行力'
+    ],
+    quote: '至人无己，神人无功，圣人无名。——《庄子·逍遥游》',
+    advice: '随心不躺平，适度入世感受人间烟火。',
+    personality: '你是那种躺在草地上看云就能度过一个下午的人。你骨子里向往自由，不喜欢被规则和期待束缚。当别人在焦虑地追赶什么的时候，你更愿意停下来问一句"何必呢"。你有一种天然的松弛感，这种松弛让你在人群中显得特别从容。但有时候，松弛也可能变成逃避，你在"顺其自然"的掩盖下，悄悄地放弃了争取。逍遥不是什么都不做，而是选择用自己喜欢的方式去做。'
+  },
+  {
+    id: 'fajia', name: '法家', master: '韩非', label: '韩非',
+    tags: ['极致理性', '规则至上', '目标导向', '公私分明', '果决清醒'],
+    tagline: '世异则事异，事异则备变',
+    bgColor: '#1a5276',
+    strengths: [
+      '逻辑清晰，擅长规划解决问题',
+      '做事高效不情绪化',
+      '决策果断，执行力强'
+    ],
+    weaknesses: [
+      '容易忽略人情，处事僵硬',
+      '不懂柔软变通，缺乏共情表达'
+    ],
+    quote: '世异则事异，事异则备变。——《韩非子·五蠹》',
+    advice: '冰冷规则之外，留存一份共情与温柔。',
+    personality: '你是一个清醒的理性主义者。你做决定从不会拍脑袋，每一步都有清晰的逻辑链条。你不喜欢模糊，不喜欢没有边界的关系和事情。你的大脑像一台精密运转的机器，任何试图用情绪说服你的人都会碰壁。你相信规则重于人情，效率高于面子。但偶尔，你也会觉得孤独——因为你在追求正确的同时，忘记了有些东西是不需要正确，只需要温暖的。'
+  },
+  {
+    id: 'mojia', name: '墨家', master: '墨翟', label: '墨子',
+    tags: ['兼爱平等', '热血利他', '心怀弱者', '吃苦耐劳', '反对纷争'],
+    tagline: '兼相爱，交相利',
+    bgColor: '#7b241c',
+    strengths: [
+      '正义感爆棚，乐于牺牲自我帮助他人',
+      '待人赤诚，不掺杂功利心',
+      '吃苦耐劳，行动力强'
+    ],
+    weaknesses: [
+      '不懂拒绝，容易被持续消耗精力',
+      '容易过度付出，忽略自身需求'
+    ],
+    quote: '兼相爱，交相利。——《墨子·兼爱中》',
+    advice: '善良设立底线，优先照顾自身需求。',
+    personality: '你心里住着一个理想主义者——不是那种空谈理想的理想主义者，而是真的会用行动去让世界变好一点的人。看到不公平的事你会愤怒，看到别人受苦你会心疼。你愿意为了一个更大的"好"，牺牲自己的时间和精力。你身上有一种难得的赤诚，这是现在很多人已经丢失的东西。但请记住，你的善良应该是有牙齿的，永远不要让别人把你的付出当作理所当然。'
+  },
+  {
+    id: 'zongheng', name: '纵横家', master: '苏秦', label: '苏秦',
+    tags: ['洞察人心', '情商出众', '擅长沟通', '灵活变通', '适应力强'],
+    tagline: '审时度势，随机应变',
+    bgColor: '#6c3483',
+    strengths: [
+      '擅长调和矛盾，社交天赋高',
+      '能换位思考，理解所有人',
+      '适应力强，融入任何环境'
+    ],
+    weaknesses: [
+      '容易为迎合他人丢失自我本心',
+      '左右摇摆，缺乏坚定立场'
+    ],
+    quote: '审时度势，随机应变。——《战国策》',
+    advice: '圆滑处世，但坚守自身底层原则。',
+    personality: '你像是人群中的调和剂，只要有你在的地方，气氛就不会太僵。你有一双很敏锐的眼睛，能看穿每个人没说出口的需求，然后巧妙地找到一个让大家都舒服的平衡点。你天生适合做沟通者，因为你既懂得坚持，也懂得退让。但有时候，你太擅长换位思考了，以至于在无数个角色的切换中，你渐渐忘了自己原本想要什么。在所有关系中，别忘了留一个位置给自己。'
+  },
+  {
+    id: 'bingjia', name: '兵家', master: '孙武', label: '孙武',
+    tags: ['冷静谋断', '未雨绸缪', '大局为重', '抗压能力强', '擅长布局'],
+    tagline: '知己知彼，百战不殆',
+    bgColor: '#1b4332',
+    strengths: [
+      '遇事冷静不慌乱',
+      '提前预判风险，善于规划',
+      '拥有领导魄力和决策力'
+    ],
+    weaknesses: [
+      '控制欲强，时刻紧绷难以放松',
+      '对他人和事要求过高，容易苛责'
+    ],
+    quote: '知己知彼，百战不殆。——《孙子兵法·谋攻篇》',
+    advice: '不必强求掌控一切，学会松弛接纳变数。',
+    personality: '你是天生的战略家。遇到问题，别人还在慌张的时候，你已经开始分析局势了。你的大脑永远在提前三步做推演——这个会怎样，那个会怎样，然后选一个最优解。你身上有一种让人安心的稳，团队里只要有你在，大家就觉得不会翻车。但这份稳来自你无时无刻不在紧绷的神经。你太怕出错了，太怕失控了——可人生最大的魅力，恰恰在于那些你算不到的部分。'
+  },
+  {
+    id: 'mingjia', name: '名家', master: '公孙龙', label: '公孙龙',
+    tags: ['思辨较真', '逻辑细腻', '注重细节', '追求事物本质'],
+    tagline: '物莫非指，而指非指',
+    bgColor: '#0e6655',
+    strengths: [
+      '观察力极强，看待问题多角度',
+      '善于拆解矛盾，发现本质',
+      '追求精确，做事可靠'
+    ],
+    weaknesses: [
+      '容易钻牛角尖，纠结小事',
+      '与人争辩不休，不够圆融'
+    ],
+    quote: '物莫非指，而指非指。——《公孙龙子·指物论》',
+    advice: '适度放下思辨，不必事事分出对错输赢。',
+    personality: '你在人群中是那个"但是"开头的人。倒不是故意抬杠，你是真的能看到别人看不到的细节和逻辑漏洞。你追求的是精确和真理，哪怕这个真理让人觉得不舒服。你的观察力极强，从一句措辞到一个停顿，你都能捕捉到隐藏的信息。这种能力让你在分析问题时有独特优势，但也让你成为辩论赛里的"魔鬼"。生活不是每一道题都需要正确答案，有些美好恰恰藏在模糊里。'
+  },
+  {
+    id: 'yinyang', name: '阴阳家', master: '邹衍', label: '邹衍',
+    tags: ['敬畏规律', '通透豁达', '感知万物', '擅长顺势而为'],
+    tagline: '观阴阳之消息，知万物之兴衰',
+    bgColor: '#1a5276',
+    strengths: [
+      '感知力敏锐，擅长顺应大势',
+      '心态平和通透，不纠结',
+      '能从宏观角度看问题'
+    ],
+    weaknesses: [
+      '容易过度佛系，被动等待',
+      '缺少主动争取的勇气'
+    ],
+    quote: '观阴阳之消息，知万物之兴衰。——《汉书·艺文志》引邹衍语',
+    advice: '顺应天道，但也要主动把握属于自己的机遇。',
+    personality: '你像是一个观察者，总是能跳脱事情本身，看到更大的图景。别人在纠结眼前的得失时，你在感受潮水的方向。你相信万物有它的规律，好的事会来，坏的事也会走，所以你不慌不忙。但有时候，你的通透——其实是一种不敢主动争取的伪装。你告诉自己"顺其自然"，也许只是因为害怕努力了也得不到。顺势而为不等于什么都不做，浪潮来的时候，你还是要自己站起来踏上去。'
+  },
+  {
+    id: 'nongjia', name: '农家', master: '许行', label: '许行',
+    tags: ['务实朴素', '知足常乐', '崇尚劳作', '简单纯粹'],
+    tagline: '贤者与民并耕而食',
+    bgColor: '#5d4037',
+    strengths: [
+      '脚踏实地，不贪慕浮华',
+      '容易在平凡小事中获得幸福感',
+      '稳定可靠，身边的人很安心'
+    ],
+    weaknesses: [
+      '格局容易受限，不愿尝试新事物',
+      '过于安于现状，缺乏进取心'
+    ],
+    quote: '贤者与民并耕而食。——《孟子·滕文公上》引许行语',
+    advice: '安于平淡之余，也多去见识广阔天地。',
+    personality: '你是这个时代少有的"慢活家"。当所有人都在加速奔跑的时候，你选择不跑。你不觉得住大房子、赚很多钱就是幸福，你更在意今天天气好不好，晚饭好不好吃。你在很小的事情上就能找到满足感，这是一种很多人都弄丢了的能力。你务实、踏实，从来不画饼，从来不开空头支票。但世界很大，有时候你的"知足"也让你错过了一些本该属于你的风景。走出去看看，你爱的田园不会消失，只会变得更加开阔。'
+  },
+  {
+    id: 'xiaoshuo', name: '小说家', master: '虞初', label: '虞初',
+    tags: ['共情细腻', '热爱生活', '擅长感知情绪', '浪漫温柔'],
+    tagline: '街谈巷语，道听途说，亦藏人间百态',
+    bgColor: '#a04000',
+    strengths: [
+      '想象力丰富，善于捕捉生活美好',
+      '共情能力强，治愈感十足',
+      '表达细腻，擅长用文字或语言打动人'
+    ],
+    weaknesses: [
+      '容易多愁善感',
+      '容易被外界负面情绪裹挟'
+    ],
+    quote: '街谈巷语，道听途说，亦藏人间百态。——《汉书·艺文志》',
+    advice: '保留浪漫敏感，但建立情绪保护屏障。',
+    personality: '你有一颗特别柔软的心，也有一双善于发现美的眼睛。别人经过一片普通的街道，看到的是路；你经过的时候，看到的是光影、是街角的花、是路人的表情。你在生活的缝隙里找到了很多很多人忽略的浪漫。你的共情力极强，朋友难过的时候总喜欢找你聊天，因为你是真的能感受到他们的感受。但这颗柔软的心也是你的软肋，别人的情绪会像潮水一样涌进你的世界。学着给你的心装一扇门，可以打开迎接美好，也可以在需要的时候关上喘口气。'
+  }
+];
+
+// ---- 15 道题（每题10个选项对应10个流派） ----
+const QUESTIONS = [
+  {
+    id: 1,
+    text: '当朋友陷入低谷向你倾诉时，你通常会怎么回应？',
+    options: [
+      { school: 'rujia', text: '耐心倾听，温柔安慰，帮他分析哪里出了问题', icon: '🤝' },
+      { school: 'daojia', text: '告诉他"顺其自然"，时间会解决一切', icon: '🌊' },
+      { school: 'fajia', text: '帮他制定一个改变现状的具体行动计划', icon: '📋' },
+      { school: 'mojia', text: '二话不说直接问他：需要我帮你做什么', icon: '🔥' },
+      { school: 'zongheng', text: '一边听一边观察他的情绪变化，调整自己的回应', icon: '🎭' },
+      { school: 'bingjia', text: '先了解事情全貌，再帮他评估得失', icon: '♟️' },
+      { school: 'mingjia', text: '仔细分析他描述中的逻辑漏洞，帮他理清误解', icon: '🔍' },
+      { school: 'yinyang', text: '告诉他一切都有它的周期，低谷之后会是上升', icon: '☯️' },
+      { school: 'nongjia', text: '带他去吃点好吃的或者散散步，行动比说话有用', icon: '🥘' },
+      { school: 'xiaoshuo', text: '认真地陪他沉浸在情绪里，说你也有过类似的感觉', icon: '💞' }
+    ]
+  },
+  {
+    id: 2,
+    text: '团队里出现分歧，大家僵持不下的时候，你的本能反应是？',
+    options: [
+      { school: 'rujia', text: '希望大家各退一步，寻找大家都能接受的方式', icon: '🕊️' },
+      { school: 'daojia', text: '觉得没必要争，各有各的道理，不如先放一放', icon: '🍃' },
+      { school: 'fajia', text: '搬出规则和标准，用事实说服大家', icon: '⚖️' },
+      { school: 'mojia', text: '站出来说"我们最终到底想实现什么"', icon: '🎯' },
+      { school: 'zongheng', text: '分别找不同意见的人私下沟通，找共同利益点', icon: '🔄' },
+      { school: 'bingjia', text: '先不表态，等各方充分表达后再做最优决策', icon: '🧠' },
+      { school: 'mingjia', text: '指出分歧的底层逻辑矛盾在哪里', icon: '🤔' },
+      { school: 'yinyang', text: '观察到大家情绪的节奏，等气氛缓和再推进', icon: '🌗' },
+      { school: 'nongjia', text: '先做点实际的事缓解气氛，比如给大家倒杯水', icon: '☕' },
+      { school: 'xiaoshuo', text: '轻声说句玩笑话让大家放松，不要太严肃', icon: '😊' }
+    ]
+  },
+  {
+    id: 3,
+    text: '你更认同下面哪一种生活方式？',
+    options: [
+      { school: 'rujia', text: '修身齐家，做好自己的本分就是成功', icon: '🏠' },
+      { school: 'daojia', text: '自在随性，不被规矩和期待绑架', icon: '🌲' },
+      { school: 'fajia', text: '目标明确，每一步都走在通往终点的路上', icon: '🎯' },
+      { school: 'mojia', text: '为更大的群体做有意义的事', icon: '🌍' },
+      { school: 'zongheng', text: '认识有趣的人，体验不同的可能性', icon: '🌐' },
+      { school: 'bingjia', text: '有规划有步骤，不打无准备之仗', icon: '📐' },
+      { school: 'mingjia', text: '每个决定都有充分的思考和依据', icon: '📖' },
+      { school: 'yinyang', text: '顺应天时地利，该努力努力，该躺平躺平', icon: '🌊' },
+      { school: 'nongjia', text: '简简单单，一日三餐，知足常乐', icon: '🌾' },
+      { school: 'xiaoshuo', text: '把生活过成诗，用心感受每一天的不同', icon: '🎨' }
+    ]
+  },
+  {
+    id: 4,
+    text: '朋友说了一句让你很不舒服的话，你会怎么做？',
+    options: [
+      { school: 'rujia', text: '先忍下来，事后可能会委婉表达自己的感受', icon: '😌' },
+      { school: 'daojia', text: '当时不舒服但很快就忘了，没必要计较', icon: '🍃' },
+      { school: 'fajia', text: '当场理性地指出那句话的问题在哪里', icon: '📢' },
+      { school: 'mojia', text: '如果觉得被冒犯会直接说出来', icon: '🗣️' },
+      { school: 'zongheng', text: '先判断他是有意还是无心，再决定怎么回应', icon: '🧐' },
+      { school: 'bingjia', text: '不动声色，但心里已经记下了', icon: '🤫' },
+      { school: 'mingjia', text: '反复琢磨那句话到底是什么意思', icon: '💭' },
+      { school: 'yinyang', text: '觉得这可能只是阶段性的小摩擦，过了就好', icon: '🌊' },
+      { school: 'nongjia', text: '不太放在心上，朋友之间不用太较真', icon: '😊' },
+      { school: 'xiaoshuo', text: '悄悄地难过一会儿，可能会写在日记里', icon: '📝' }
+    ]
+  },
+  {
+    id: 5,
+    text: '面对一个重大人生选择，你的决策习惯更接近？',
+    options: [
+      { school: 'rujia', text: '咨询家人和有经验的自尊，听听大家的意见', icon: '👨‍👩‍👧' },
+      { school: 'daojia', text: '听从内心的声音，感觉对了就做', icon: '🧘' },
+      { school: 'fajia', text: '列出利弊清单，理性分析再得出结论', icon: '📊' },
+      { school: 'mojia', text: '选那个对更多人有益的选项', icon: '🤲' },
+      { school: 'zongheng', text: '考量各方得失，选一个各方都能接受的方案', icon: '⚖️' },
+      { school: 'bingjia', text: '预判最坏情况，确保自己有能力兜底', icon: '🛡️' },
+      { school: 'mingjia', text: '反复推演不同选择的逻辑后果', icon: '🔄' },
+      { school: 'yinyang', text: '看大环境是怎样的，顺势做决定', icon: '🌊' },
+      { school: 'nongjia', text: '选更稳妥、变化不大的那个', icon: '🌱' },
+      { school: 'xiaoshuo', text: '闭上眼睛想象一下每种选择后的画面，选心跳加速的那个', icon: '💖' }
+    ]
+  },
+  {
+    id: 6,
+    text: '你觉得自己在朋友眼中最大的特点是？',
+    options: [
+      { school: 'rujia', text: '靠谱，有分寸感，让人放心', icon: '🛡️' },
+      { school: 'daojia', text: '随和不计较，跟他们一起很放松', icon: '😌' },
+      { school: 'fajia', text: '清醒又果断，遇事总能给出现实建议', icon: '💡' },
+      { school: 'mojia', text: '热心肠，朋友有难随叫随到', icon: '🏃' },
+      { school: 'zongheng', text: '情商高，什么场合都能聊得来', icon: '🎙️' },
+      { school: 'bingjia', text: '稳重不慌张，是大家的主心骨', icon: '🏛️' },
+      { school: 'mingjia', text: '逻辑缜密，跟他们辩论从占不到便宜', icon: '🧠' },
+      { school: 'yinyang', text: '佛系但通透，总能把事看得很开', icon: '☮️' },
+      { school: 'nongjia', text: '真实不装，跟他们待着很舒服', icon: '🍵' },
+      { school: 'xiaoshuo', text: '温柔细腻，记得每个人的生日和喜好', icon: '🎀' }
+    ]
+  },
+  {
+    id: 7,
+    text: '周末没有安排，你最可能做以下哪件事？',
+    options: [
+      { school: 'rujia', text: '整理房间，看书学习，做个自律的人', icon: '📚' },
+      { school: 'daojia', text: '找个安静的地方发呆、听音乐或者喝茶', icon: '🍵' },
+      { school: 'fajia', text: '规划下一个阶段的安排，检查进度', icon: '📅' },
+      { school: 'mojia', text: '去帮朋友做个什么事，或者参加公益活动', icon: '🤲' },
+      { school: 'zongheng', text: '约很久没见的朋友吃饭聊天', icon: '🥂' },
+      { school: 'bingjia', text: '复盘最近的事，查漏补缺', icon: '📊' },
+      { school: 'mingjia', text: '看一部烧脑的纪录片或者读书', icon: '📺' },
+      { school: 'yinyang', text: '看天气决定，去公园晒太阳或者在家窝着', icon: '⛅' },
+      { school: 'nongjia', text: '自己做顿饭，慢慢享受简单的快乐', icon: '🍳' },
+      { school: 'xiaoshuo', text: '看一部文艺电影，写点感想', icon: '🎬' }
+    ]
+  },
+  {
+    id: 8,
+    text: '你觉得自己处理压力的方式更接近？',
+    options: [
+      { school: 'rujia', text: '靠自律和时间管理来度过', icon: '⏰' },
+      { school: 'daojia', text: '告诉自己一切都会过去', icon: '🌊' },
+      { school: 'fajia', text: '分析压力来源，逐一解决', icon: '🔧' },
+      { school: 'mojia', text: '通过帮助别人来转移自己的焦虑', icon: '🤗' },
+      { school: 'zongheng', text: '找信任的人聊一聊，说出来就好些', icon: '💬' },
+      { school: 'bingjia', text: '制定应对策略，不让情绪影响判断', icon: '🧘' },
+      { school: 'mingjia', text: '不停地想为什么会这样，试图找到答案', icon: '🤔' },
+      { school: 'yinyang', text: '接受压力是生活的一部分，不抗拒', icon: '🤝' },
+      { school: 'nongjia', text: '吃顿好的或者运动一下', icon: '🏋️' },
+      { school: 'xiaoshuo', text: '看电影、写情绪日记来释放', icon: '✍️' }
+    ]
+  },
+  {
+    id: 9,
+    text: '你对"成功"的理解更接近以下哪种？',
+    options: [
+      { school: 'rujia', text: '家庭和睦，受人尊重，问心无愧', icon: '🏡' },
+      { school: 'daojia', text: '内心自由自在，不以物喜不以己悲', icon: '🕊️' },
+      { school: 'fajia', text: '实现既定目标，达成自己想要的成就', icon: '🏆' },
+      { school: 'mojia', text: '有能力帮助更多的人', icon: '🤲' },
+      { school: 'zongheng', text: '有影响力，能在各种关系中游刃有余', icon: '🌐' },
+      { school: 'bingjia', text: '赢了该赢的战役，达到预期的结果', icon: '⚔️' },
+      { school: 'mingjia', text: '想明白了大部分事情，不糊涂', icon: '💡' },
+      { school: 'yinyang', text: '身心平衡，顺风顺水', icon: '☯️' },
+      { school: 'nongjia', text: '身体健康，吃得香睡得好', icon: '😴' },
+      { school: 'xiaoshuo', text: '做自己喜欢的事，爱人爱己', icon: '💞' }
+    ]
+  },
+  {
+    id: 10,
+    text: '如果被人误解了，你第一反应是？',
+    options: [
+      { school: 'rujia', text: '反思自己是不是哪里做得不够好', icon: '😔' },
+      { school: 'daojia', text: '懒得解释，懂的人自然会懂', icon: '🙃' },
+      { school: 'fajia', text: '摆出证据和事实澄清', icon: '📎' },
+      { school: 'mojia', text: '心里很委屈，但还是不会怪对方', icon: '😢' },
+      { school: 'zongheng', text: '看人下菜碟，重要的人就解释，不重要就算了', icon: '🎭' },
+      { school: 'bingjia', text: '先按兵不动，看看对他有没有实际影响', icon: '🔭' },
+      { school: 'mingjia', text: '反复想他为什么这么想，逻辑是什么', icon: '🤯' },
+      { school: 'yinyang', text: '相信误会终究会解开', icon: '🌟' },
+      { school: 'nongjia', text: '不太在意，做好自己的事就行', icon: '🙂' },
+      { school: 'xiaoshuo', text: '偷偷难过很久，会反复回想', icon: '🥺' }
+    ]
+  },
+  {
+    id: 11,
+    text: '你理想中的亲密关系是什么样的？',
+    options: [
+      { school: 'rujia', text: '相敬如宾，互相扶持，共同成长', icon: '🤝' },
+      { school: 'daojia', text: '各自独立又互相陪伴，不强求不黏腻', icon: '🦋' },
+      { school: 'fajia', text: '清晰的边界感，互相尊重对方的生活节奏', icon: '🏗️' },
+      { school: 'mojia', text: '你中有我我中有你，为对方付出不觉得累', icon: '❤️' },
+      { school: 'zongheng', text: '能聊到一起，也能给对方足够的空间', icon: '💬' },
+      { school: 'bingjia', text: '并肩作战的伙伴，彼此可靠', icon: '🛡️' },
+      { school: 'mingjia', text: '精神共鸣，能在思想层面交流', icon: '🧠' },
+      { school: 'yinyang', text: '随缘，该来的时候自然就来', icon: '🌊' },
+      { school: 'nongjia', text: '平平淡淡，踏踏实实过日子', icon: '🏡' },
+      { school: 'xiaoshuo', text: '浪漫温柔，互相写小纸条的那种', icon: '💌' }
+    ]
+  },
+  {
+    id: 12,
+    text: '你更欣赏以下哪种领导风格？',
+    options: [
+      { school: 'rujia', text: '德高望重，以身作则', icon: '👑' },
+      { school: 'daojia', text: '无为而治，给下属充分的自由度', icon: '🍃' },
+      { school: 'fajia', text: '赏罚分明，制度清晰', icon: '📜' },
+      { school: 'mojia', text: '带头冲锋，和团队同甘共苦', icon: '⚔️' },
+      { school: 'zongheng', text: '善用人才，懂得在不同情况下用不同策略', icon: '🎯' },
+      { school: 'bingjia', text: '运筹帷幄，决胜千里之外', icon: '🧠' },
+      { school: 'mingjia', text: '逻辑严密，决策都有充分依据', icon: '📊' },
+      { school: 'yinyang', text: '因势利导，顺着大势做决策', icon: '🌊' },
+      { school: 'nongjia', text: '务实落地，不画大饼', icon: '🔨' },
+      { school: 'xiaoshuo', text: '有人情味，关心每个人的感受', icon: '💞' }
+    ]
+  },
+  {
+    id: 13,
+    text: '遇到不公平的事情，你的反应通常是？',
+    options: [
+      { school: 'rujia', text: '心里不舒服但会选择隐忍，以和为贵', icon: '😐' },
+      { school: 'daojia', text: '觉得没什么好争的，吃点亏就吃点亏', icon: '🙂' },
+      { school: 'fajia', text: '直接指出哪里不公平，要求按规则处理', icon: '⚖️' },
+      { school: 'mojia', text: '站出来替弱者说话', icon: '🦸' },
+      { school: 'zongheng', text: '评估发声的后果，选择最有效的沟通方式', icon: '🎯' },
+      { school: 'bingjia', text: '暂时忍耐，等合适的时机再出手', icon: '⏳' },
+      { school: 'mingjia', text: '从逻辑上驳斥不公的论点', icon: '🗡️' },
+      { school: 'yinyang', text: '觉得世间自有因果', icon: '☯️' },
+      { school: 'nongjia', text: '能忍则忍，实在忍不了再说', icon: '😤' },
+      { school: 'xiaoshuo', text: '对不公平特别敏感，可能会很久都忘不掉', icon: '💔' }
+    ]
+  },
+  {
+    id: 14,
+    text: '你觉得你最大的能量来源是？',
+    options: [
+      { school: 'rujia', text: '做正确的事，尽到自己的责任', icon: '🌟' },
+      { school: 'daojia', text: '独处的时光，不受打扰的自由', icon: '🌙' },
+      { school: 'fajia', text: '看到计划一步步推进的成就感', icon: '📈' },
+      { school: 'mojia', text: '帮助别人后对方开心的笑容', icon: '😊' },
+      { school: 'zongheng', text: '和不同的人交流碰撞出新的火花', icon: '✨' },
+      { school: 'bingjia', text: '战胜挑战后的胜利感', icon: '🏅' },
+      { school: 'mingjia', text: '想通了一个纠结很久的问题', icon: '💡' },
+      { school: 'yinyang', text: '大自然和安静的节奏', icon: '🌿' },
+      { school: 'nongjia', text: '一顿好饭，一个好觉', icon: '😴' },
+      { school: 'xiaoshuo', text: '生活中那些美好的小事', icon: '🌸' }
+    ]
+  },
+  {
+    id: 15,
+    text: '下面哪句话最能引起你的共鸣？',
+    options: [
+      { school: 'rujia', text: '修身齐家治国平天下', icon: '📏' },
+      { school: 'daojia', text: '天地与我并生，万物与我为一', icon: '🌌' },
+      { school: 'fajia', text: '治世不一道，便国不法古', icon: '⚡' },
+      { school: 'mojia', text: '有力者疾以助人，有财者勉以分人', icon: '🤲' },
+      { school: 'zongheng', text: '一人之辩，重于九鼎之宝', icon: '💬' },
+      { school: 'bingjia', text: '善战者，无智名，无勇功', icon: '🏆' },
+      { school: 'mingjia', text: '至大无外，至小无内', icon: '🔬' },
+      { school: 'yinyang', text: '一阴一阳之谓道', icon: '☯️' },
+      { school: 'nongjia', text: '民生在勤，勤则不匮', icon: '🌾' },
+      { school: 'xiaoshuo', text: '将生活的琐碎编成诗', icon: '📖' }
+    ]
+  }
+];
+
+
+// ---- APP ----
+// ============================================================
+// 诸子百家人格测试 — 核心逻辑
+// ============================================================
+
+const STATE = {
+  currentQ: 0,          // 当前题号 (0-indexed)
+  scores: {},           // { schoolId: number }
+  answers: [],          // [{ school, text }]
+  result: null,         // 最终结果
+  started: false,
+  finished: false
+};
+
+// 初始化分数
+function initScores() {
+  const s = {};
+  SCHOOLS.forEach(sch => { s[sch.id] = 0; });
+  return s;
+}
+
+// 开始测试
+function startTest() {
+  STATE.currentQ = 0;
+  STATE.scores = initScores();
+  STATE.answers = [];
+  STATE.result = null;
+  STATE.started = true;
+  STATE.finished = false;
+}
+
+// 选择答案
+function selectAnswer(schoolId, text) {
+  STATE.scores[schoolId]++;
+  STATE.answers.push({ school: schoolId, text });
+
+  if (STATE.currentQ < QUESTIONS.length - 1) {
+    STATE.currentQ++;
+    return { done: false, nextQ: STATE.currentQ };
+  } else {
+    // 答题完成，计算结果
+    STATE.finished = true;
+    STATE.result = calculateResult();
+    return { done: true };
+  }
+}
+
+// 计算最高分流派
+function calculateResult() {
+  let maxScore = 0;
+  let topSchools = [];
+
+  for (const [id, score] of Object.entries(STATE.scores)) {
+    if (score > maxScore) {
+      maxScore = score;
+      topSchools = [id];
+    } else if (score === maxScore) {
+      topSchools.push(id);
+    }
+  }
+
+  // 并列最高分：把全部并列流派一并返回（不再用数组顺序决定结果）
+  const tiedSchools = topSchools.map(function(id) {
+    return SCHOOLS.find(function(s) { return s.id === id; });
+  });
+  return {
+    school: tiedSchools[0],
+    tiedSchools: tiedSchools,
+    tied: tiedSchools.length > 1,
+    scores: { ...STATE.scores },
+    maxScore,
+    answers: [...STATE.answers]
+  };
+}
+
+// 生成分享文案
+function generateShareText(school) {
+  return `🔮 测完发现我是${school.label}·${school.master}！原来我的骨子里藏着千年诸子风骨，快来测测你属于哪家先贤～`;
+}
+
+// 获取雷达图数据
+function getRadarData() {
+  return SCHOOLS.map(s => ({
+    name: s.name,
+    value: STATE.scores[s.id] || 0
+  }));
+}
+
+
+// ============================================================
+// UI 控制器
+// ============================================================
+var chartInstance = null;
+
+function showPage(id) {
+  var ps = document.querySelectorAll('.page');
+  for (var i = 0; i < ps.length; i++) ps[i].classList.remove('active');
+  var el = document.getElementById(id);
+  if (el) el.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showQuiz() {
+  try {
+    startTest();
+    showPage('page-quiz');
+    renderQuestion();
+  } catch(e) {
+    console.error('showQuiz error:', e);
+    alert('页面异常，请刷新重试');
+  }
+}
+
+function renderQuestion() {
+  var q = QUESTIONS[STATE.currentQ];
+  var c = document.getElementById('qContainer');
+  if (!q || !c) return;
+  var h = '<div class="q-card"><div class="q-num">\u7b2c ' + (STATE.currentQ + 1) + ' / ' + QUESTIONS.length + ' \u9898</div><div class="q-text">' + q.text + '</div><div class="options">';
+  for (var i = 0; i < q.options.length; i++) {
+    var o = q.options[i];
+    h += '<div class="opt" data-school="' + o.school + '"><span class="opt-icon">' + o.icon + '</span><span class="opt-text">' + o.text + '</span></div>';
+  }
+  h += '</div></div>';
+  c.innerHTML = h;
+  updateProgress();
+  // Bind events
+  var opts = c.querySelectorAll('.opt');
+  for (var i = 0; i < opts.length; i++) {
+    opts[i].addEventListener('click', optClickHandler);
+  }
+}
+
+function optClickHandler(e) {
+  var el = e.currentTarget;
+  try {
+    if (el.classList.contains('sel')) return;
+    var all = document.querySelectorAll('.opt');
+    for (var i = 0; i < all.length; i++) all[i].style.pointerEvents = 'none';
+    el.classList.add('sel');
+    var schoolId = el.getAttribute('data-school');
+    var q = QUESTIONS[STATE.currentQ];
+    var opt = null;
+    for (var i = 0; i < q.options.length; i++) { if (q.options[i].school === schoolId) { opt = q.options[i]; break; } }
+    var result = selectAnswer(schoolId, opt.text);
+    if (result.done) {
+      setTimeout(function() { showResult(); }, 500);
+    } else {
+      setTimeout(function() { renderQuestion(); }, 280);
+      setTimeout(function() { var a = document.querySelectorAll('.opt'); for (var j = 0; j < a.length; j++) a[j].style.pointerEvents = ''; }, 280);
+    }
+  } catch(e) {
+    console.error('optClick error:', e);
+    var a = document.querySelectorAll('.opt');
+    for (var i = 0; i < a.length; i++) a[i].style.pointerEvents = '';
+  }
+}
+
+function updateProgress() {
+  var total = QUESTIONS.length;
+  var done = STATE.currentQ;
+  var pct = Math.round((done / total) * 100);
+  var pt = document.getElementById('progText');
+  var pp = document.getElementById('progPct');
+  var pf = document.getElementById('progFill');
+  if (pt) pt.textContent = '\u7b2c ' + (done + 1) + ' / ' + total + ' \u9898';
+  if (pp) pp.textContent = pct + '%';
+  if (pf) pf.style.width = pct + '%';
+}
+
+function showResult() {
+  try {
+    var r = STATE.result;
+    if (!r || !r.school) throw new Error('no result');
+    var s = r.school;
+    showPage('page-result');
+    setText('rMaster', s.master);
+    setText('rLabel', s.name);
+    setText('rTagline', '\u2014\u2014 ' + (s.tags || []).slice(0,3).join(' \u00b7 ') + ' \u2014\u2014');
+        var _tn = (r.tiedSchools || []).map(function(x) { return x.name; });
+        if (_tn.length > 1) {
+          var _el = document.getElementById('rTagline');
+          if (_el) _el.textContent += '\u3000\uFF08\u4F60\u540C\u65F6\u5E76\u5217\uFF1A' + _tn.join(' \u00b7 ') + '\uFF09';
+        }
+    setText('rPersonality', s.personality);
+    setHTML('rStrengths', (s.strengths || []).map(function(t) { return '<li>' + t + '</li>'; }).join(''));
+    setHTML('rWeaknesses', (s.weaknesses || []).map(function(t) { return '<li>' + t + '</li>'; }).join(''));
+    setText('rQuote', s.quote);
+    setText('rAdvice', s.advice);
+    renderRadar();
+  } catch(e) {
+    console.error('showResult error:', e);
+  }
+}
+
+function setText(id, v) { var el = document.getElementById(id); if (el) el.textContent = (v != null ? v : ''); }
+function setHTML(id, v) { var el = document.getElementById(id); if (el) el.innerHTML = (v != null ? v : ''); }
+
+function renderRadar() {
+  var canvas = document.getElementById('radarChart');
+  if (!canvas) return;
+  if (chartInstance) { try { chartInstance.destroy(); } catch(e) {} chartInstance = null; }
+  var fm = document.getElementById('radarFallbackMsg');
+  if (fm) fm.style.display = 'none';
+
+  var data = getRadarData();
+  if (typeof Chart !== 'undefined') {
+    try {
+      chartInstance = new Chart(canvas, {
+        type: 'radar',
+        data: {
+          labels: data.map(function(d) { return d.name; }),
+          datasets: [{
+            label: '\u6d41\u6d3e\u5951\u5408\u5ea6',
+            data: data.map(function(d) { return d.value; }),
+            backgroundColor: 'rgba(192,57,43,0.1)',
+            borderColor: 'rgba(192,57,43,0.6)',
+            borderWidth: 2,
+            pointBackgroundColor: 'rgba(192,57,43,0.8)',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 1,
+            pointRadius: 4
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: true,
+          plugins: { legend: { display: false },
+            tooltip: { backgroundColor: 'rgba(60,36,21,0.9)', titleFont: { family: 'Noto Serif SC' }, bodyFont: { family: 'Noto Serif SC' } }
+          },
+          scales: {
+            r: {
+              beginAtZero: true,
+              ticks: { stepSize: 1, font: { family: 'Noto Serif SC', size: 11 }, backdropColor: 'transparent' },
+              pointLabels: { font: { family: 'Noto Serif SC', size: 12 }, color: '#5a4a3a' },
+              grid: { color: 'rgba(60,36,21,0.08)' },
+              angleLines: { color: 'rgba(60,36,21,0.1)' }
+            }
+          }
+        }
+      });
+      return;
+    } catch(e) {
+      console.warn('Chart.js failed:', e.message);
+    }
+  }
+  drawRadarFallback(canvas, data);
+}
+
+function drawRadarFallback(canvas, data) {
+  var pw = canvas.parentElement;
+  var W = pw ? pw.clientWidth : 300;
+  if (W > 360) W = 360; if (W < 200) W = 200;
+  var H = W, cx = W/2, cy = H/2, R = Math.min(W,H)*0.32;
+  var n = data.length, maxVal = 1;
+  for (var i = 0; i < n; i++) { if (data[i].value > maxVal) maxVal = data[i].value; }
+  var dpr = window.devicePixelRatio || 1;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  function angle(i) { return -Math.PI/2 + (2*Math.PI*i)/n; }
+  for (var lv = 1; lv <= maxVal; lv++) {
+    ctx.beginPath();
+    for (var i = 0; i <= n; i++) {
+      var a = angle(i%n), r = (lv/maxVal)*R, x = cx+r*Math.cos(a), y = cy+r*Math.sin(a);
+      if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.strokeStyle='rgba(60,36,21,0.1)'; ctx.lineWidth=1; ctx.stroke();
+  }
+  for (var i = 0; i < n; i++) {
+    var a = angle(i);
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+R*Math.cos(a),cy+R*Math.sin(a));
+    ctx.strokeStyle='rgba(60,36,21,0.12)'; ctx.stroke();
+  }
+  ctx.beginPath();
+  for (var i = 0; i <= n; i++) {
+    var idx = i%n, a = angle(idx), r = (data[idx].value/maxVal)*R, x = cx+r*Math.cos(a), y = cy+r*Math.sin(a);
+    if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.closePath(); ctx.fillStyle='rgba(192,57,43,0.12)'; ctx.fill();
+  ctx.strokeStyle='rgba(192,57,43,0.6)'; ctx.lineWidth=2; ctx.stroke();
+  for (var i = 0; i < n; i++) {
+    var a = angle(i), r = (data[i].value/maxVal)*R, x = cx+r*Math.cos(a), y = cy+r*Math.sin(a);
+    ctx.beginPath(); ctx.arc(x,y,4,0,2*Math.PI);
+    ctx.fillStyle='rgba(192,57,43,0.8)'; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1; ctx.stroke();
+  }
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  for (var i = 0; i < n; i++) {
+    var a = angle(i);
+    ctx.fillStyle='#5a4a3a'; ctx.font='12px "Noto Serif SC",serif';
+    ctx.fillText(data[i].name, cx+(R+18)*Math.cos(a), cy+(R+18)*Math.sin(a));
+    ctx.fillStyle='rgba(192,57,43,0.6)'; ctx.font='10px "Noto Serif SC",serif';
+    ctx.fillText(data[i].value+'\u5206', cx+(R+32)*Math.cos(a), cy+(R+32)*Math.sin(a));
+  }
+  if (fm) fm.style.display = 'block';
+}
+
+function copyShare() {
+  try {
+    var s = STATE.result.school;
+    var text = generateShareText(s);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function() { showToast('\u2705 \u5206\u4eab\u6587\u6848\u5df2\u590d\u5236\uff0c\u5feb\u53bb\u53d1\u670b\u53cb\u5708\u5427\uff01'); }).catch(function() { fallbackCopy(text); });
+    } else { fallbackCopy(text); }
+  } catch(e) { showToast('\u274c \u590d\u5236\u5931\u8d25'); }
+}
+
+function fallbackCopy(text) {
+  try {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('\u2705 \u5206\u4eab\u6587\u6848\u5df2\u590d\u5236');
+  } catch(e) { showToast('\uD83D\uDCCB \u8bf7\u624b\u52a8\u590d\u5236'); }
+}
+
+function showToast(msg) {
+  var old = document.querySelector('.toast');
+  if (old) old.remove();
+  var el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(function() { el.remove(); }, 2000);
+}
+
+function resetAll() {
+  try { if (chartInstance) { chartInstance.destroy(); chartInstance = null; } } catch(e) {}
+  showPage('page-home');
+}
+
+// ---- 按钮绑定 ----
+(function() {
+  var b = document.getElementById('btnStart');
+  if (b) b.addEventListener('click', showQuiz);
+  var bc = document.getElementById('btnCopy');
+  if (bc) bc.addEventListener('click', copyShare);
+  var br = document.getElementById('btnReset');
+  if (br) br.addEventListener('click', resetAll);
+  console.log('\u25a0 \u8bf8\u5b50\u767e\u5bb6\u6d4b\u8bd5\u5df2\u5c31\u7eea');
+})();
+</script>
+
+</body>
+</html>

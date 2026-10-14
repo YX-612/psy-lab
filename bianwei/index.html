@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>辩论位测试 · 你适合打哪个辩位</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;background:#e8edf5;color:#1a2332;min-height:100vh;overflow-x:hidden}
+#pcanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.15}
+.page{display:none;position:relative;z-index:1;min-height:100vh}
+.page.active{display:flex;flex-direction:column;align-items:center}
+#splash{justify-content:center;text-align:center;padding:40px 20px;background:linear-gradient(160deg,#e8edf5,#d0d9e8,#e8edf5)}
+.title-icon{font-size:64px;margin-bottom:8px}
+.stitle{font-size:clamp(1.5rem,4.5vw,2.2rem);color:#1a3a5c;letter-spacing:0.06em;margin-bottom:4px}
+.ssub{font-size:clamp(0.8rem,2vw,0.95rem);color:#5a7a9a;margin-bottom:28px}
+.sbtn{background:linear-gradient(135deg,#2a5a8a,#4a7ab8);color:#fff;border:none;padding:14px 48px;font-size:1rem;font-weight:600;letter-spacing:0.08em;cursor:pointer;border-radius:6px;box-shadow:0 4px 15px rgba(42,90,138,0.25)}
+.sbtn:hover{background:linear-gradient(135deg,#3a6a9a,#5a8ac8);transform:translateY(-1px)}
+#quiz{padding:24px 14px 40px;max-width:600px;margin:0 auto;width:100%}
+.qhead{text-align:center;margin-bottom:16px;border-bottom:1px solid rgba(42,90,138,0.1);padding-bottom:12px}
+.qp{font-size:0.7rem;color:#7a8a9a}
+.qg{font-size:0.65rem;color:#8a9aaa}
+.qt{font-size:1rem;color:#1a3a5c;font-weight:600;letter-spacing:0.04em}
+.qcard{width:100%;background:rgba(255,255,255,0.85);backdrop-filter:blur(6px);border:1px solid rgba(42,90,138,0.08);padding:24px 18px;border-radius:8px;animation:fadeUp 0.4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.qtext{font-size:clamp(0.95rem,2.4vw,1.05rem);line-height:1.7;margin-bottom:16px;color:#1a2332;font-weight:500}
+.obtn{display:block;width:100%;text-align:left;background:rgba(42,90,138,0.03);border:1px solid rgba(42,90,138,0.1);padding:11px 14px;margin-bottom:6px;color:#2a4a6a;font-size:0.85rem;cursor:pointer;border-radius:6px}
+.obtn:hover{background:rgba(42,90,138,0.08);border-color:rgba(42,90,138,0.25);color:#1a3a5c}
+.obtn.sel{background:rgba(42,90,138,0.12);border-color:#4a7ab8;color:#1a3a5c;font-weight:600}
+.nr{display:flex;gap:10px;width:100%;margin-top:4px}
+.nb{flex:1;padding:9px 0;background:rgba(42,90,138,0.05);border:1px solid rgba(42,90,138,0.12);color:#5a7a9a;font-size:0.8rem;cursor:pointer;border-radius:6px}
+.nb:hover:not(:disabled){background:rgba(42,90,138,0.1);color:#1a3a5c}
+.nb:disabled{opacity:0.25;cursor:not-allowed}
+.nbp{background:linear-gradient(135deg,#2a5a8a,#4a7ab8);color:#fff;border:none}
+.nbp:hover:not(:disabled){background:linear-gradient(135deg,#3a6a9a,#5a8ac8)}
+#result{padding:40px 16px 50px;max-width:580px;margin:0 auto;width:100%}
+.rbadge{font-size:3.4rem;text-align:center;animation:popIn 0.8s cubic-bezier(0.175,0.885,0.32,1.275)}
+@keyframes popIn{0%{transform:scale(0) rotate(-15deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+.rname{font-size:clamp(1.4rem,3.8vw,2rem);text-align:center;color:#1a3a5c;margin-bottom:2px;animation:fadeSlide 0.6s 0.2s both}
+.ralias{font-size:1.2rem;text-align:center;color:#4a6a8a;margin-bottom:2px;animation:fadeSlide 0.6s 0.3s both}
+.rsub{font-size:0.8rem;color:#6a8aaa;text-align:center;margin-bottom:14px;animation:fadeSlide 0.6s 0.4s both}
+.rdiv{width:60px;height:2px;background:linear-gradient(90deg,transparent,#4a7ab8,transparent);margin:0 auto 14px;animation:fadeSlide 0.6s 0.4s both}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.rdesc{line-height:1.9;font-size:0.92rem;color:#2a4a6a;text-align:center;padding:0 4px;animation:fadeSlide 0.6s 0.5s both}
+.rquote{background:rgba(42,90,138,0.06);border-left:3px solid #4a7ab8;padding:12px 16px;margin-top:14px;border-radius:0 6px 6px 0;animation:fadeSlide 0.6s 0.6s both}
+.rquote .ql{font-size:0.8rem;color:#3a6a9a;font-weight:600;margin-bottom:3px}
+.rquote .qtxt{font-size:0.85rem;color:#2a4a6a;line-height:1.7}
+.rs{margin-top:16px;padding:14px 16px;background:rgba(255,255,255,0.75);border:1px solid rgba(42,90,138,0.08);border-radius:8px;animation:fadeSlide 0.6s 0.7s both}
+.sr{display:flex;justify-content:space-between;font-size:0.75rem;padding:3px 0;align-items:center}
+.sr .lb{color:#5a7a9a;min-width:64px}
+.sr .bw{flex:1;margin:0 8px;background:rgba(42,90,138,0.08);height:6px;border-radius:3px}
+.sr .bf{height:100%;border-radius:3px;transition:width 1.5s ease}
+.sr .vl{color:#1a3a5c;min-width:20px;text-align:right;font-weight:600}
+.rbtn{display:block;margin:22px auto 0;background:linear-gradient(135deg,#2a5a8a,#4a7ab8);color:#fff;border:none;padding:11px 36px;font-size:0.85rem;cursor:pointer;border-radius:6px;font-weight:600;animation:fadeSlide 0.6s 0.8s both}
+.rbtn:hover{background:linear-gradient(135deg,#3a6a9a,#5a8ac8)}
+.fn{text-align:center;margin-top:12px;font-size:0.6rem;color:#8a9aaa}
+@media(max-width:480px){.qcard{padding:18px 12px}.obtn{padding:9px 10px;font-size:0.8rem}.rbadge{font-size:2.8rem}}
+</style>
+</head>
+<body>
+<canvas id="pcanvas"></canvas>
+<div id="splash" class="page active">
+  <div class="title-icon">🎙️</div>
+  <h1 class="stitle">辩论位 · 适配测试</h1>
+  <p class="ssub">一辩开篇 · 二辩承转 · 三辩攻防 · 四辩收官</p>
+  <button class="sbtn" onclick="startQuiz()">✦ 开始测试 ✦</button>
+  <p class="fn">你会是哪个辩位的天选之人？</p>
+</div>
+<div id="quiz" class="page"></div>
+<div id="result" class="page"></div>
+<script>
+var Q=[
+{t:"备战辩论时，你最享受哪个环节？",o:[{t:"查阅资料、梳理定义和框架",s:[3,1,1,1]},{t:"预判对方可能的论证路径",s:[1,3,1,1]},{t:"准备质询问题和攻防演练",s:[1,1,3,1]},{t:"打磨结辩的价值升华稿",s:[1,1,1,3]}]},
+{t:"拿到一个辩题后，你的第一反应是——",o:[{t:"这个概念的定义是什么？边界在哪？",s:[3,1,1,1]},{t:"对方的立场会从哪几个角度打？",s:[1,3,1,1]},{t:"这个辩题最致命的攻击点在哪？",s:[1,1,3,1]},{t:"这个辩题背后更深层的价值是什么？",s:[1,1,1,3]}]},
+{t:"场上你最擅长的是——",o:[{t:"用清晰的定义让对方无从下手",s:[3,1,1,1]},{t:"迅速记录并归纳双方的交锋点",s:[1,3,1,1]},{t:"在自由辩中连续追问压制对方",s:[1,1,3,1]},{t:"在结辩时用价值升华打动评委",s:[1,1,1,3]}]},
+{t:"队友对场上局势产生分歧时，你通常会——",o:[{t:"建议先回到己方定义框架重新梳理",s:[3,1,1,1]},{t:"分别听完双方分歧后再做判断",s:[1,3,1,1]},{t:"直接指出哪一方的逻辑更有攻击性",s:[1,1,3,1]},{t:"从全局角度分析哪种策略更有利于最终判胜",s:[1,1,1,3]}]},
+{t:"你觉得自己在团队中最常扮演的角色是——",o:[{t:"定基调的人",s:[3,1,1,1]},{t:"穿针引线的人",s:[1,3,1,1]},{t:"发起冲锋的人",s:[1,1,3,1]},{t:"收尾定调的人",s:[1,1,1,3]}]},
+{t:"讨论辩题时你最爱说的一句话是——",o:[{t:"先把这个概念定义清楚",s:[3,1,1,1]},{t:"我们目前的共识和分歧分别是什么",s:[1,3,1,1]},{t:"这里有一个可以直接打穿的点",s:[1,1,3,1]},{t:"这场比赛的胜负手可能是什么",s:[1,1,1,3]}]},
+{t:"对方提出一个意想不到的新论点时，你——",o:[{t:"思考它是否违背了辩题的基本定义",s:[3,1,1,1]},{t:"快速把这个论点纳入己方逻辑框架",s:[1,3,1,1]},{t:"当场找它的逻辑漏洞准备回击",s:[1,1,3,1]},{t:"思考这个论点对整体战局的影响",s:[1,1,1,3]}]},
+{t:"你觉得辩论中最重要的是——",o:[{t:"逻辑的严密性",s:[3,1,1,1]},{t:"团队的默契配合",s:[1,3,1,1]},{t:"反应的敏捷和杀伤力",s:[1,1,3,1]},{t:"价值的深度和感染力",s:[1,1,1,3]}]},
+{t:"自由辩论时你的状态是——",o:[{t:"稳住己方定义不被对方带跑",s:[3,1,1,1]},{t:"寻找机会把己方论据串联打出",s:[1,3,1,1]},{t:"火力全开，一个问题接一个问题",s:[1,1,3,1]},{t:"留出精力思考最后怎么收尾",s:[1,1,1,3]}]},
+{t:"你认为最理想的辩手风格是——",o:[{t:"冷静理性，用逻辑说服人",s:[3,1,1,1]},{t:"温和坚定，用态度感染人",s:[1,3,1,1]},{t:"犀利直接，用气势压倒人",s:[1,1,3,1]},{t:"深沉有力，用价值打动人",s:[1,1,1,3]}]},
+{t:"质询环节你更倾向于——",o:[{t:"通过封闭性问题锁定对方的定义矛盾",s:[3,1,1,1]},{t:"通过开放式问题暴露对方的逻辑断层",s:[1,3,1,1]},{t:"步步紧逼不给对方喘息空间",s:[1,1,3,1]},{t:"适时收手给评委思考空间",s:[1,1,1,3]}]},
+{t:"你觉得辩论的魅力在于——",o:[{t:"用逻辑还原事物的本来面目",s:[3,1,1,1]},{t:"不同观点之间的碰撞与融合",s:[1,3,1,1]},{t:"用言语的交锋分出高下",s:[1,1,3,1]},{t:"让更多人听到有价值的声音",s:[1,1,1,3]}]},
+{t:"比赛进入尾声时，你通常在想——",o:[{t:"我们今天有没有守住己方的定义",s:[3,1,1,1]},{t:"我们的论据是否都有效传递了",s:[1,3,1,1]},{t:"对方的漏洞我们是否都打到了",s:[1,1,3,1]},{t:"最后这段总结要怎样升华到价值层面",s:[1,1,1,3]}]},
+{t:"你认同哪种说法？",o:[{t:"辩论是说服的艺术，逻辑是第一位的",s:[3,1,1,1]},{t:"辩论是沟通的艺术，理解是第一位的",s:[1,3,1,1]},{t:"辩论是博弈的艺术，攻击是第一位的",s:[1,1,3,1]},{t:"辩论是共情的艺术，价值是第一位的",s:[1,1,1,3]}]},
+{t:"输了一场比赛后，你最深刻的感受是——",o:[{t:"我们的定义没有做到滴水不漏",s:[3,1,1,1]},{t:"团队的配合还有提升空间",s:[1,3,1,1]},{t:"有几个该打到的点漏掉了",s:[1,1,3,1]},{t:"我们的价值没有被充分传递",s:[1,1,1,3]}]},
+{t:"你心中最完美的辩论赛是——",o:[{t:"双方定义清晰、逻辑严密的对决",s:[3,1,1,1]},{t:"攻防有序、配合默契的团队演出",s:[1,3,1,1]},{t:"火花四溅、扣人心弦的激烈交锋",s:[1,1,3,1]},{t:"价值深刻、引人深思的思想盛宴",s:[1,1,1,3]}]}];
+var RS=[
+{n:"一辩 · 开宗明义",e:"📜",a:"你有望与长亭老师并肩",d:"你是辩论场上第一个站起来说话的人，冷静沉稳，逻辑清晰。你擅长为整场辩论定下基调，用精准的定义构筑己方阵地。你不追求锋芒毕露，但你的每一句话都是后续攻防的基石。开宗明义，定义先行——赛场因你而有序。",q:"长亭老师曾说：“辩论不是谁声音大谁就赢，而是谁的定义更接近真相。”你在立论时那份沉静的力量，让对手不得不重视你的每一处逻辑起点。",s:[3,1,1,1]},
+{n:"二辩 · 承上启下",e:"🔗",a:"你有望与抱抱龙老师并肩",d:"你是辩论队的粘合剂，承接一辩的立论框架，梳理交锋脉络。你能在混乱的战场中找到逻辑线，帮助团队稳住阵脚。承上启下，辅助全场——看似不是最亮眼的那个，却是最不可或缺的一环。",q:"抱抱龙老师的温柔与坚定，是你最大的特质。你不抢锋芒，却总能用恰到好处的补位让全场节奏回到己方轨道。真正的控场，不需要喧哗。",s:[1,3,1,1]},
+{n:"三辩 · 攻防核心",e:"⚡",a:"你有望与周姐/谢队并肩",d:"你是辩论场上最锋利的刀刃，反应迅捷，输出密集。自由辩论是你的主场，质询环节是你的高光时刻。你能精准找到对手逻辑的薄弱点并一击制胜。疯狂输出，掌控全场——你就是战场本身。",q:"周姐的犀利、谢队的压迫感，在你身上都有影子。你的每一次追问都让对手无从招架，每一次接质都滴水不漏。你属于聚光灯下，属于刀光剑影之中。",s:[1,1,3,1]},
+{n:"四辩 · 力挽狂澜",e:"🏛️",a:"你有望与前进号老师并肩",d:"你是辩论队最后的底牌，在整场比赛的尾声站起来，用总结升华全场。你能在看似劣势的局面中找到翻盘点，用价值升华打动评委和听众。总结全部，力挽狂澜——你从不放弃，因为你相信话语的力量可以改变一切。",q:"前进号老师的风格就是绝境中开出花来。你的结辩总是带着穿透力，让听众在最后一刻重新审视整场比赛。纵使前路艰难，你依然选择相信辩论的力量。",s:[1,1,1,3]}];
+var DN=["一辩·定调","二辩·串联","三辩·攻防","四辩·升华"];
+
+var a=[],ci=0;
+
+function gr(s){
+  // 并列最高分时随机选取，避免结果被数组顺序决定
+  var m=-Infinity,tops=[];
+  for(var i=0;i<4;i++){
+    if(s[i]>m){m=s[i];tops=[i];}
+    else if(s[i]===m){tops.push(i);}
+  }
+  return tops[Math.floor(Math.random()*tops.length)];
+}
+
+function startQuiz(){ci=0;a=[];s=[0,0,0,0];
+  document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});
+  document.getElementById("quiz").classList.add("active");rQ();
+}
+
+function rQ(){
+  var q=Q[ci],qz=document.getElementById("quiz"),len=Q.length,sl=a[ci]!==undefined?a[ci]:-1;
+  qz.innerHTML='<div class="qhead"><div class="qp">第 '+(ci+1)+' / '+len+' 题</div><div class="qg">✦ 辩论位适配测试 ✦</div><div class="qt">你的辩手特质</div></div><div class="qcard"><div class="qtext">'+q.t+'</div>'+q.o.map(function(o,i){return '<div class="obtn'+(i===sl?' sel':'')+'" onclick="so('+i+')">'+o.t+'</div>';}).join('')+'</div><div class="nr"><button class="nb" onclick="pq()" '+(ci===0?'disabled':'')+'>← 上一题</button><button class="nb nbp" onclick="nq()">'+(ci===len-1?'✦ 查看结果':'下一题 →')+'</button></div><p class="fn">选择最贴近你的选项</p>';
+}
+
+function so(i){a[ci]=i;rQ();if(ci<Q.length-1)setTimeout(function(){ci++;rQ();},300);}
+function nq(){if(a[ci]===undefined)return;if(ci===Q.length-1){calc();return;}ci++;rQ();}
+function pq(){if(ci===0)return;ci--;rQ();}
+
+function calc(){
+  var s=[0,0,0,0];
+  for(var i=0;i<a.length;i++){var idx=a[i];if(idx===undefined)continue;var sq=Q[i].o[idx].s;for(var d=0;d<4;d++)s[d]+=sq[d];}
+  showResult(gr(s),s);
+}
+
+function showResult(mi,s){
+  document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active");});
+  var r=RS[mi],ms=Math.max.apply(null,s.concat([1])),ba=["#3a6a9a","#5a8ab8","#7aaae0","#2a5a8a"];
+  var sh=s.map(function(v,i){return '<div class="sr"><span class="lb">'+DN[i]+'</span><div class="bw"><div class="bf" style="width:'+(v/ms*100)+'%;background:'+ba[i]+'"></div></div><span class="vl">'+v+'</span></div>';}).join("");
+  var rs=document.getElementById("result");rs.classList.add("active");
+  rs.innerHTML='<div class="rbadge">'+r.e+'</div><div class="rname">'+r.n+'</div><div class="ralias">'+r.a+'</div><div class="rsub">辩论位适配分析</div><div class="rdiv"></div><div class="rdesc">'+r.d+'</div><div class="rquote"><div class="ql">💬 辩位寄语</div><div class="qtxt">'+r.q+'</div></div><div class="rs">'+sh+'</div><button class="rbtn" onclick="startQuiz()">✦ 重新测试 ✦</button><p class="fn">仅供娱乐 · 找到属于你的辩论位</p>';
+}
+
+(function(){
+  var c=document.getElementById("pcanvas"),x=c.getContext("2d");var w,h,ps=[];
+  function rs(){w=c.width=innerWidth;h=c.height=innerHeight}
+  window.addEventListener("resize",rs);rs();
+  for(var i=0;i<50;i++)ps.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.5+0.3,dx:(Math.random()-0.5)*0.2,dy:-(Math.random()*0.2+0.05),o:Math.random()*0.3+0.1,ph:Math.random()*6.28});
+  function dr(){x.clearRect(0,0,w,h);var t=Date.now()/1e3;for(var i=0;i<ps.length;i++){var p=ps[i];p.x+=p.dx;p.y+=p.dy;if(p.y<-10){p.y=h+10;p.x=Math.random()*w}if(p.x<-10)p.x=w+10;if(p.x>w+10)p.x=-10;var al=p.o*(0.5+0.5*Math.sin(t+p.ph));x.beginPath();x.arc(p.x,p.y,p.r,0,6.28);x.fillStyle="rgba(42,90,138,"+al+")";x.fill();}requestAnimationFrame(dr);}
+  dr();
+})();
+</script></body></html>

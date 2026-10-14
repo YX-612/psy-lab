@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎭 测测你是红楼梦里的谁？</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+
+  :root {
+    --rose: #e8a0bf;
+    --rose-deep: #d4709a;
+    --jade: #7eb8a4;
+    --jade-deep: #5a9a7e;
+    --gold: #d4a843;
+    --gold-light: #f0d68a;
+    --ink: #2c1810;
+    --ink-light: #5a3d2b;
+    --cream: #fdf6ee;
+    --cream-dark: #f5e6d0;
+    --paper: #faf3e8;
+    --shadow: rgba(44, 24, 16, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ====== 页面容器 ====== */
+  .page {
+    display: none;
+    min-height: 100vh;
+    padding: 0 0 60px;
+    animation: fadeUp 0.6s ease;
+  }
+  .page.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ====== 封面页 ====== */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #fdf6ee 0%, #f9e4d0 40%, #f0d0b8 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 40px 20px;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(232,160,191,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -80px;
+    width: 350px; height: 350px;
+    background: radial-gradient(circle, rgba(126,184,164,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .cover-icon {
+    font-size: 80px;
+    margin-bottom: 10px;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .cover h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(28px, 7vw, 42px);
+    font-weight: 900;
+    text-align: center;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--ink) 0%, var(--rose-deep) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .cover-sub {
+    font-size: 16px;
+    color: var(--ink-light);
+    margin-bottom: 30px;
+    text-align: center;
+    opacity: 0.8;
+  }
+
+  .cover-deco {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 14px;
+    color: var(--gold);
+    letter-spacing: 4px;
+    margin-bottom: 40px;
+    text-align: center;
+    line-height: 2;
+    padding: 20px 30px;
+    border: 1px solid var(--gold-light);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.5);
+  }
+
+  .start-btn {
+    position: relative;
+    z-index: 1;
+    padding: 16px 60px;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: #fff;
+    background: linear-gradient(135deg, var(--rose-deep) 0%, var(--rose) 100%);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(212,112,154,0.3);
+    transition: all 0.3s ease;
+    letter-spacing: 2px;
+  }
+  .start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(212,112,154,0.4);
+  }
+  .start-btn:active {
+    transform: translateY(0);
+  }
+
+  .cover-tips {
+    margin-top: 30px;
+    font-size: 13px;
+    color: #999;
+    text-align: center;
+  }
+
+  /* ====== 答题页 ====== */
+  .quiz-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .progress-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(253,246,238,0.95);
+    backdrop-filter: blur(10px);
+    padding: 16px 16px 12px;
+    margin: 0 -16px;
+  }
+
+  .progress-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .progress-label {
+    font-size: 13px;
+    color: var(--ink-light);
+    font-weight: 500;
+  }
+
+  .progress-count {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--rose-deep);
+  }
+
+  .progress-track {
+    height: 6px;
+    background: var(--cream-dark);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--rose) 0%, var(--rose-deep) 100%);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+
+  .question-card {
+    margin-top: 24px;
+    padding: 32px 24px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 24px var(--shadow);
+    border: 1px solid rgba(232,160,191,0.15);
+  }
+
+  .question-num {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, var(--rose) 0%, var(--rose-deep) 100%);
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    letter-spacing: 1px;
+  }
+
+  .question-text {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(18px, 4.5vw, 22px);
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+
+  .question-context {
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 18px;
+    background: var(--paper);
+    border: 2px solid transparent;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    line-height: 1.6;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .option:hover {
+    border-color: var(--rose);
+    background: #fff;
+    transform: translateX(4px);
+  }
+  .option:active {
+    transform: scale(0.98);
+  }
+  .option.selected {
+    border-color: var(--rose-deep);
+    background: linear-gradient(135deg, #fff5f9 0%, #fff 100%);
+    box-shadow: 0 2px 12px rgba(212,112,154,0.15);
+  }
+
+  .option-marker {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--cream-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #bbb;
+    transition: all 0.25s ease;
+    margin-top: 1px;
+  }
+  .option.selected .option-marker {
+    background: linear-gradient(135deg, var(--rose) 0%, var(--rose-deep) 100%);
+    border-color: var(--rose-deep);
+    color: #fff;
+  }
+
+  .option-text {
+    flex: 1;
+  }
+
+  /* ====== 结果页 ====== */
+  .result-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .result-card {
+    background: #fff;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(44,24,16,0.1);
+    margin-top: 20px;
+  }
+
+  .result-header {
+    padding: 48px 28px 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .result-header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--rose), var(--gold), var(--jade));
+  }
+
+  .result-emoji {
+    font-size: 72px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .result-label {
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .result-name {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(28px, 7vw, 36px);
+    font-weight: 900;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .result-title {
+    font-size: 16px;
+    color: var(--rose-deep);
+    font-weight: 600;
+  }
+
+  .result-keywords {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .keyword {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid;
+  }
+  .keyword.rose { color: var(--rose-deep); border-color: var(--rose); background: rgba(232,160,191,0.08); }
+  .keyword.jade { color: var(--jade-deep); border-color: var(--jade); background: rgba(126,184,164,0.08); }
+  .keyword.gold { color: #b8922e; border-color: var(--gold); background: rgba(212,168,67,0.08); }
+
+  .result-body {
+    padding: 0 28px 28px;
+  }
+
+  .result-desc {
+    font-size: 15px;
+    line-height: 2;
+    color: var(--ink-light);
+    margin-bottom: 24px;
+  }
+
+  .result-poem {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 15px;
+    color: var(--gold);
+    text-align: center;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, rgba(253,246,238,0.8) 0%, rgba(240,214,138,0.1) 100%);
+    border-radius: 14px;
+    border: 1px solid rgba(212,168,67,0.2);
+    margin-bottom: 24px;
+    line-height: 2;
+    letter-spacing: 2px;
+  }
+
+  .result-section {
+    margin-bottom: 20px;
+  }
+  .result-section-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .result-section-text {
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--ink-light);
+  }
+  .result-section-text.highlight {
+    color: var(--rose-deep);
+    font-weight: 500;
+  }
+
+  .result-actions {
+    padding: 24px 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: #fff;
+    background: linear-gradient(135deg, var(--rose-deep) 0%, var(--rose) 100%);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    box-shadow: 0 6px 24px rgba(212,112,154,0.25);
+    transition: all 0.3s ease;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(212,112,154,0.35);
+  }
+
+  .btn-secondary {
+    width: 100%;
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: var(--ink-light);
+    background: var(--paper);
+    border: 2px solid var(--cream-dark);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .btn-secondary:hover {
+    border-color: var(--rose);
+    color: var(--rose-deep);
+  }
+
+  .share-hint {
+    text-align: center;
+    font-size: 12px;
+    color: #bbb;
+    margin-top: 8px;
+    line-height: 1.8;
+  }
+
+  /* ====== 汇总页 ====== */
+  .all-results {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+  .all-results h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--ink);
+  }
+  .char-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .char-item {
+    padding: 20px 16px;
+    background: #fff;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 2px 12px var(--shadow);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    border: 2px solid transparent;
+  }
+  .char-item:hover {
+    transform: translateY(-3px);
+    border-color: var(--rose);
+  }
+  .char-item .char-emoji { font-size: 36px; display: block; margin-bottom: 8px; }
+  .char-item .char-name {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .char-item .char-tag {
+    font-size: 12px;
+    color: #999;
+  }
+
+  /* ====== 装饰 ====== */
+  .decorative-line {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 20px auto;
+  }
+
+  /* ====== 动画 ====== */
+  .fade-in {
+    animation: fadeIn 0.5s ease forwards;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* ====== 响应式 ====== */
+  @media (max-width: 400px) {
+    .question-card { padding: 24px 18px; }
+    .result-header { padding: 36px 20px 28px; }
+    .result-body { padding: 0 20px 24px; }
+    .result-actions { padding: 20px 20px 28px; }
+    .option { padding: 14px 14px; }
+  }
+
+  /* ====== 打印友好 ====== */
+  @media print {
+    .start-btn, .btn-primary, .btn-secondary, .share-hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== 封面页 ==================== -->
+<div class="page active" id="page-cover">
+  <div class="cover">
+    <span class="cover-icon">🎭</span>
+    <h1>测测你是<br>红楼梦里的谁</h1>
+    <p class="cover-sub">8道灵魂拷问 · 找到你的红楼人格</p>
+    <div class="cover-deco">
+      满纸荒唐言<br>一把辛酸泪<br>都云作者痴<br>谁解其中味
+    </div>
+    <button class="start-btn" onclick="startQuiz()">开始测试 →</button>
+    <p class="cover-tips">⏱ 约2分钟 · 结果超准 · 别偷看答案</p>
+  </div>
+</div>
+
+<!-- ==================== 答题页 ==================== -->
+<div class="page" id="page-quiz">
+  <div class="progress-bar">
+    <div class="progress-top">
+      <span class="progress-label">红楼灵魂测试</span>
+      <span class="progress-count" id="progress-text">1 / 8</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width: 12.5%"></div>
+    </div>
+  </div>
+  <div class="quiz-container">
+    <div class="question-card" id="question-card">
+      <!-- 由JS动态渲染 -->
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 结果页 ==================== -->
+<div class="page" id="page-result">
+  <div class="result-page">
+    <div class="result-card" id="result-card">
+      <!-- 由JS动态渲染 -->
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 全角色汇总页 ==================== -->
+<div class="page" id="page-all">
+  <div class="all-results">
+    <h2>📜 红楼八美人</h2>
+    <div class="decorative-line"></div>
+    <div class="char-grid" id="char-grid">
+      <!-- 由JS动态渲染 -->
+    </div>
+    <div style="text-align:center; margin-top:24px;">
+      <button class="btn-primary" onclick="startQuiz()" style="max-width:300px;">再测一次 🔄</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== 题库 ====================
+const questions = [
+  {
+    context: "你拿到一笔意外之财，你会——",
+    question: "你选择怎样的生活方式？",
+    options: [
+      { text: "给自己买一束花，窝在家里看一整天书 🌸", scores: { daiyu: 3, baoyu: 1 } },
+      { text: "存起来，顺便规划一下未来三年的财务 📊", scores: { baochai: 3, xifeng: 1 } },
+      { text: "约上好朋友们一起吃顿大餐，热闹一下 🎉", scores: { xiangyun: 3, xiren: 1 } },
+      { text: "去旅行，看看这个世界还有什么没见过的 ✈️", scores: { tanchun: 3, miaoyu: 1 } }
+    ]
+  },
+  {
+    context: "和最好的朋友大吵一架后，你会——",
+    question: "你和朋友吵架了怎么办？",
+    options: [
+      { text: "一个人默默流泪，觉得全世界都不理解自己 💔", scores: { daiyu: 3, baoyu: 1 } },
+      { text: "先冷静几天，想清楚谁对谁错，然后主动沟通 🤝", scores: { baochai: 3, tanchun: 1 } },
+      { text: "直接找对方理论，把话说清楚，不憋着 🔥", scores: { xifeng: 3, xiangyun: 1 } },
+      { text: "发条朋友圈暗示一下，等对方来找你 🫣", scores: { miaoyu: 2, xiren: 2 } }
+    ]
+  },
+  {
+    context: "关于爱情，你最向往的是——",
+    question: "你理想的爱情是什么样的？",
+    options: [
+      { text: "灵魂伴侣，能懂你所有未说出口的话 💫", scores: { daiyu: 3, baoyu: 2 } },
+      { text: "势均力敌，两个人一起变更好 🌟", scores: { baochai: 2, tanchun: 3 } },
+      { text: "被人宠着，有人为你遮风挡雨 ☂️", scores: { xiren: 3, xiangyun: 1 } },
+      { text: "自由洒脱，互相欣赏但不过度依赖 🦋", scores: { miaoyu: 3, xifeng: 1 } }
+    ]
+  },
+  {
+    context: "在团队合作中，你通常扮演——",
+    question: "工作中你是什么角色？",
+    options: [
+      { text: "创意担当，总能提出让人眼前一亮的想法 💡", scores: { baoyu: 3, daiyu: 1 } },
+      { text: "执行力超强，把所有细节都安排得明明白白 📋", scores: { baochai: 2, xiren: 3 } },
+      { text: "气场全开的leader，说一不二 👑", scores: { xifeng: 3, tanchun: 2 } },
+      { text: "调和剂，谁有矛盾都来找你 💆", scores: { xiangyun: 2, baochai: 1 } }
+    ]
+  },
+  {
+    context: "以下四样东西，你只能保留一样，你选——",
+    question: "你最在意什么？",
+    options: [
+      { text: "一颗能看透人心的水晶球 🔮", scores: { daiyu: 2, miaoyu: 3 } },
+      { text: "一张永远不会被拒绝的VIP通行证 🎫", scores: { xifeng: 3, tanchun: 1 } },
+      { text: "一个永远装不满的存钱罐 💰", scores: { baochai: 2, xiren: 3 } },
+      { text: "一本写满人生剧本的书 📖", scores: { baoyu: 3, xiangyun: 1 } }
+    ]
+  },
+  {
+    context: "遇到你不喜欢的人，你会——",
+    question: "你怎么对待不喜欢的人？",
+    options: [
+      { text: "不撕破脸，但会在心里默默画一条线 ✏️", scores: { daiyu: 3, baochai: 1 } },
+      { text: "表面客客气气，心里门儿清 🎭", scores: { baochai: 3, xifeng: 1 } },
+      { text: "不装了，直接保持距离 🚧", scores: { miaoyu: 3, tanchun: 1 } },
+      { text: "尝试理解对方，说不定能成为朋友呢 🌈", scores: { xiangyun: 3, baoyu: 1 } }
+    ]
+  },
+  {
+    context: "凌晨两点睡不着，你会——",
+    question: "深夜emo时你怎么做？",
+    options: [
+      { text: "突然伤感，开始写小作文发到仅自己可见 📝", scores: { daiyu: 3, baoyu: 1 } },
+      { text: "打开备忘录列明天的计划，越列越清醒 📌", scores: { tanchun: 3, baochai: 1 } },
+      { text: "刷手机刷到困，或者点个外卖犒劳自己 🍜", scores: { xiangyun: 2, xiren: 2 } },
+      { text: "出门散步，或者看星星发呆 🌙", scores: { miaoyu: 3, baoyu: 1 } }
+    ]
+  },
+  {
+    context: "你可以永远住在一个花园里，你选——",
+    question: "你选择哪个花园住一辈子？",
+    options: [
+      { text: "一个种满竹子和兰花的安静小院 🎋", scores: { daiyu: 3, miaoyu: 1 } },
+      { text: "一个井井有条、四季花开不断的精致庭院 🌷", scores: { baochai: 3, xiren: 1 } },
+      { text: "一个可以开派对的超大花园，随时有人来玩 🎪", scores: { xiangyun: 3, xifeng: 1 } },
+      { text: "一个荒野中的秘密花园，只有你知道入口 🗝️", scores: { baoyu: 2, miaoyu: 2 } }
+    ]
+  }
+];
+
+// ==================== 角色数据 ====================
+const characters = {
+  daiyu: {
+    name: "林黛玉",
+    emoji: "💎",
+    title: "绝世清冷才女",
+    tags: ["灵魂敏感", "才华横溢", "至死不渝"],
+    tagColors: ["rose", "jade", "gold"],
+    poem: "质本洁来还洁去，强于污淖陷渠沟。",
+    desc: `你是人群中最独特的那一个。你内心丰富细腻，对世界有着超乎常人的感知力。别人看到的是花开花落，你看到的是人生无常。
+
+你不是不合群，只是还没遇到能真正懂你的人。一旦认定，便是此生唯一。`,
+    charm: "你的眼神里藏着整个星空，让人忍不住想靠近。",
+    lesson: "学会放过自己，允许不完美。"
+  },
+  baochai: {
+    name: "薛宝钗",
+    emoji: "🧠",
+    title: "人间清醒大女主",
+    tags: ["通透豁达", "大局观强", "温润如玉"],
+    tagColors: ["jade", "rose", "gold"],
+    poem: "好风凭借力，送我上青云。",
+    desc: `你是朋友圈里的"定海神针"。不管多大的事，你总能冷静分析，找到最优解。你不是没有脾气，而是选择把能量花在更值得的事情上。
+
+你的高情商让人如沐春风，但很少有人知道你背后的付出和自律。`,
+    charm: "你是那种“越了解越让人敬佩”的人。",
+    lesson: "偶尔也要允许自己示弱。"
+  },
+  xifeng: {
+    name: "王熙凤",
+    emoji: "🔥",
+    title: "霸气侧漏的事业女王",
+    tags: ["雷厉风行", "野心勃勃", "笑里藏刀"],
+    tagColors: ["gold", "rose", "jade"],
+    poem: "机关算尽太聪明，反算了卿卿性命。",
+    desc: `你是天生的领导者。别人还在纠结的时候，你已经把三步之后的棋都下好了。你不怕得罪人，因为你知道——善良没有锋芒，就是软弱。
+
+表面上你笑着，心里的算盘比谁都精。但对真正在乎的人，你愿意掏出全部。`,
+    charm: "你活成了很多人想成为却不敢成为的样子。",
+    lesson: "学会信任，不是所有事都需要你一个人扛。"
+  },
+  xiangyun: {
+    name: "史湘云",
+    emoji: "☀️",
+    title: "元气满满的社交天花板",
+    tags: ["开朗洒脱", "豪爽大气", "乐天派"],
+    tagColors: ["gold", "jade", "rose"],
+    poem: "厮配得才貌仙郎，博得个地久天长。",
+    desc: `你是行走的"开心果"！有你在的地方永远不会冷场。你心直口快，从不藏着掖着，活得坦荡又痛快。
+
+即使经历了风雨，你也能笑着说出"没关系"。你的乐观不是因为不知道生活的苦，而是选择用阳光面对一切。`,
+    charm: "你是那种让人“看到你就觉得今天会好起来”的人。",
+    lesson: "偶尔也允许自己不开心，不必总是“没事的”。"
+  },
+  tanchun: {
+    name: "贾探春",
+    emoji: "🚀",
+    title: "有野心的实干家",
+    tags: ["有远见", "不服输", "改革先锋"],
+    tagColors: ["jade", "gold", "rose"],
+    poem: "才自精明志自高，生于末世运偏消。",
+    desc: `你是那种"出身不重要，我命由我不由天"的人。你有强烈的自我意识和上进心，永远在寻找突破和成长的机会。
+
+你讨厌平庸，不安于现状，总是在挑战自己。别人觉得你"太拼了"，但你知道——只有自己能给自己想要的生活。`,
+    charm: "你身上那股“不服来战”的劲儿，真的太飒了。",
+    lesson: "有时候慢下来，也是一种力量。"
+  },
+  miaoyu: {
+    name: "妙玉",
+    emoji: "🌿",
+    title: "高冷孤傲的文艺隐士",
+    tags: ["独立自主", "审美极高", "宁缺毋滥"],
+    tagColors: ["jade", "gold", "rose"],
+    poem: "欲洁何曾洁，云空未必空。",
+    desc: `你是朋友圈里的"隐世高人"。你不care世俗的标准，只遵从自己内心的节奏。你的品味总是领先别人三步，但你懒得解释。
+
+你不是高冷，只是对"不合适"的事情提不起兴趣。一旦遇到对的人或事，你会展现惊人的热情和忠诚。`,
+    charm: "你是那种“人群中安静发光”的人。",
+    lesson: "学会放下执念，不完美的世界也有值得拥抱的部分。"
+  },
+  xiren: {
+    name: "袭人",
+    emoji: "🫶",
+    title: "温柔可靠的暖心天使",
+    tags: ["温柔体贴", "忠诚靠谱", "默默付出"],
+    tagColors: ["rose", "jade", "gold"],
+    poem: "枉自温柔和顺，空云似桂如兰。",
+    desc: `你是那种"朋友有难第一个想到的人"。你总是默默地照顾身边的人，把最好的留给别人，把委屈留给自己。
+
+你不是没有主见，只是习惯了用温柔的方式化解一切。你的善良是骨子里的，不是表演。`,
+    charm: "你是人间“安全感”的代名词。",
+    lesson: "你的感受也很重要，别忘了照顾自己。"
+  },
+  baoyu: {
+    name: "贾宝玉",
+    emoji: "🌙",
+    title: "浪漫主义的理想家",
+    tags: ["重情重义", "追求自由", "悲天悯人"],
+    tagColors: ["gold", "rose", "jade"],
+    poem: "潦倒不通世务，愚顽怕读文章。",
+    desc: `你是天生的理想主义者。你相信世间万物皆有灵，你对每一段关系都投入真心。别人觉得你"太感性"，但你清楚——感性是这个理性世界里最珍贵的东西。
+
+你不愿随波逐流，不愿意变成"大多数人"。你想要的是纯粹的、不打折扣的爱和自由。`,
+    charm: "你是那种让人“想保护”的存在。",
+    lesson: "梦想很美，但也要学会在现实中找到平衡。"
+  }
+};
+
+const characterOrder = ["daiyu","baochai","xifeng","xiangyun","tanchun","miaoyu","xiren","baoyu"];
+
+// ==================== 状态 ====================
+let currentQ = 0;
+let scores = {};
+let answers = [];
+
+function initScores() {
+  scores = {};
+  characterOrder.forEach(k => scores[k] = 0);
+}
+
+// ==================== 核心逻辑 ====================
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const page = document.getElementById(id);
+  page.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function startQuiz() {
+  currentQ = 0;
+  answers = [];
+  initScores();
+  renderQuestion();
+  showPage('page-quiz');
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  const total = questions.length;
+
+  document.getElementById('progress-text').textContent = `${currentQ + 1} / ${total}`;
+  document.getElementById('progress-fill').style.width = `${((currentQ + 1) / total) * 100}%`;
+
+  const markers = ['A', 'B', 'C', 'D'];
+  const card = document.getElementById('question-card');
+  card.style.animation = 'none';
+  card.offsetHeight; // trigger reflow
+  card.style.animation = 'fadeUp 0.4s ease';
+
+  card.innerHTML = `
+    <span class="question-num">第 ${currentQ + 1} 题</span>
+    <div class="question-text">${q.question}</div>
+    <div class="question-context">${q.context}</div>
+    <div class="options">
+      ${q.options.map((opt, i) => `
+        <div class="option" onclick="selectOption(${i})" id="opt-${i}">
+          <span class="option-marker">${markers[i]}</span>
+          <span class="option-text">${opt.text}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function selectOption(index) {
+  // 取消之前的选中
+  document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  document.getElementById(`opt-${index}`).classList.add('selected');
+
+  // 记录分数
+  const q = questions[currentQ];
+  const optionScores = q.options[index].scores;
+  for (const [key, val] of Object.entries(optionScores)) {
+    scores[key] += val;
+  }
+  answers.push(index);
+
+  // 延迟切换
+  setTimeout(() => {
+    currentQ++;
+    if (currentQ < questions.length) {
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  }, 350);
+}
+
+// 计分公平性修复：先用答案键算出各角色在"随机作答"下的均值 μ 与标准差 σ，
+// 再按 (得分 − μ) / σ 比较。否则分值池大的角色（如黛玉）天生更容易被选中。
+let CHAR_STATS = null;
+function charStats() {
+  if (CHAR_STATS) return CHAR_STATS;
+  const st = {};
+  characterOrder.forEach(k => { st[k] = { mu: 0, va: 0 }; });
+  questions.forEach(q => {
+    const n = q.options.length;
+    characterOrder.forEach(k => {
+      let s1 = 0, s2 = 0;
+      q.options.forEach(o => {
+        const v = (o.scores && o.scores[k]) || 0;
+        s1 += v; s2 += v * v;
+      });
+      const m = s1 / n;
+      st[k].mu += m;
+      st[k].va += Math.max(0, s2 / n - m * m);
+    });
+  });
+  characterOrder.forEach(k => { st[k].sd = Math.sqrt(st[k].va) || 1; });
+  CHAR_STATS = st;
+  return st;
+}
+
+function getResult() {
+  const st = charStats();
+  let best = characterOrder[0], bestZ = -Infinity;
+  for (const k of characterOrder) {
+    const z = (scores[k] - st[k].mu) / st[k].sd;
+    if (z > bestZ) { bestZ = z; best = k; }
+  }
+  return best;
+}
+
+function showResult() {
+  const key = getResult();
+  const c = characters[key];
+
+  const tagColors = ['rose', 'jade', 'gold'];
+
+  document.getElementById('result-card').innerHTML = `
+    <div class="result-header">
+      <span class="result-emoji">${c.emoji}</span>
+      <div class="result-label">你的红楼人格是</div>
+      <div class="result-name">${c.name}</div>
+      <div class="result-title">${c.title}</div>
+      <div class="result-keywords">
+        ${c.tags.map((t, i) => `<span class="keyword ${tagColors[i]}">${t}</span>`).join('')}
+      </div>
+    </div>
+    <div class="result-body">
+      <p class="result-desc">${c.desc.replace(/\n/g, '<br>')}</p>
+      <div class="result-poem">"${c.poem}"</div>
+      <div class="result-section">
+        <div class="result-section-title">✨ 你的致命魅力</div>
+        <div class="result-section-text highlight">${c.charm}</div>
+      </div>
+      <div class="result-section">
+        <div class="result-section-title">💡 你的课题</div>
+        <div class="result-section-text">${c.lesson}</div>
+      </div>
+    </div>
+    <div class="result-actions">
+      <button class="btn-primary" onclick="startQuiz()">再测一次 🔄</button>
+      <button class="btn-secondary" onclick="showAllResults()">看看其他红楼人格 👀</button>
+      <p class="share-hint">📌 截图分享到小红书<br>评论区晒出你的人物～</p>
+    </div>
+  `;
+
+  showPage('page-result');
+}
+
+function showAllResults() {
+  const grid = document.getElementById('char-grid');
+  grid.innerHTML = characterOrder.map(key => {
+    const c = characters[key];
+    return `
+      <div class="char-item" onclick="showSingleResult('${key}')">
+        <span class="char-emoji">${c.emoji}</span>
+        <div class="char-name">${c.name}</div>
+        <div class="char-tag">${c.title}</div>
+      </div>
+    `;
+  }).join('');
+
+  showPage('page-all');
+}
+
+function showSingleResult(key) {
+  const c = characters[key];
+  document.getElementById('result-card').innerHTML = `
+    <div class="result-header">
+      <span class="result-emoji">${c.emoji}</span>
+      <div class="result-label">红楼人格</div>
+      <div class="result-name">${c.name}</div>
+      <div class="result-title">${c.title}</div>
+      <div class="result-keywords">
+        ${c.tags.map((t, i) => `<span class="keyword ${['rose','jade','gold'][i]}">${t}</span>`).join('')}
+      </div>
+    </div>
+    <div class="result-body">
+      <p class="result-desc">${c.desc.replace(/\n/g, '<br>')}</p>
+      <div class="result-poem">"${c.poem}"</div>
+      <div class="result-section">
+        <div class="result-section-title">✨ 致命魅力</div>
+        <div class="result-section-text highlight">${c.charm}</div>
+      </div>
+      <div class="result-section">
+        <div class="result-section-title">💡 人生课题</div>
+        <div class="result-section-text">${c.lesson}</div>
+      </div>
+    </div>
+    <div class="result-actions">
+      <button class="btn-primary" onclick="startQuiz()">测测我是谁 🎭</button>
+      <button class="btn-secondary" onclick="showAllResults()">返回全部角色</button>
+    </div>
+  `;
+  showPage('page-result');
+}
+</script>
+
+</body>
+</html>

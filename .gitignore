@@ -1,0 +1,35 @@
+# ---------- 操作系统 / 编辑器噪音 ----------
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# ---------- 编辑器 ----------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# ---------- 本项目零构建，以下通常不该出现 ----------
+node_modules/
+dist/
+build/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# ---------- 本地临时 / 调试产物 ----------
+_tmp/
+*.tmp
+*.bak
+*.orig
+
+# ---------- 验证脚本生成的临时副本 ----------
+_probe_*.html
