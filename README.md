@@ -9,7 +9,7 @@
   <img alt="backend" src="https://img.shields.io/badge/backend-none-2437ff">
   <img alt="license" src="https://img.shields.io/badge/license-MIT-2437ff">
 </p>
-**▶ 在线体验：[点击打开 PSY LAB](https://yx-612.github.io/psy-lab/ )**（GitHub Pages · 手机可直接打开）
+**▶ 在线体验：[点击打开 PSY LAB](https://yx-612.github.io/psy-lab/ >)（GitHub Pages · 手机可直接打开）
 
 ## 包含的测试
 
