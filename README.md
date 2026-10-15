@@ -9,6 +9,8 @@
   <img alt="backend" src="https://img.shields.io/badge/backend-none-2437ff">
   <img alt="license" src="https://img.shields.io/badge/license-MIT-2437ff">
 </p>
+**▶ 在线体验：<https://yx-612.github.io/psy-lab/>**（GitHub Pages · 手机可直接打开）
+
 
 ## 包含的测试
 
